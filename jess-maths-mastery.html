@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maths Mastery - Exponents & Patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-deep: #0a0a0f;
+  --bg-card: #12121a;
+  --bg-card-hover: #1a1a28;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --text-dim: #8888a0;
+  --text-muted: #555570;
+  --cyan: #00e5ff;
+  --cyan-glow: rgba(0, 229, 255, 0.15);
+  --magenta: #ff2d78;
+  --magenta-glow: rgba(255, 45, 120, 0.15);
+  --green: #00e676;
+  --green-glow: rgba(0, 230, 118, 0.15);
+  --amber: #ffab00;
+  --amber-glow: rgba(255, 171, 0, 0.15);
+  --purple: #b388ff;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient background */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 20% 50%, rgba(0, 229, 255, 0.03) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(255, 45, 120, 0.03) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 80%, rgba(179, 136, 255, 0.02) 0%, transparent 50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── NAV ── */
+.top-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.top-bar h1 {
+  font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.progress-bar-wrap {
+  flex: 1; max-width: 300px; margin: 0 20px;
+  height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%; width: 0%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  transition: width 0.6s ease;
+}
+.score-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem; color: var(--cyan);
+}
+
+/* ── LAYOUT ── */
+.container {
+  position: relative; z-index: 1;
+  max-width: 800px; margin: 0 auto;
+  padding: 80px 20px 60px;
+}
+
+/* ── HERO ── */
+.hero {
+  text-align: center; padding: 60px 0 40px;
+  animation: fadeUp 0.8s ease;
+}
+.hero h2 {
+  font-size: 2.8rem; font-weight: 900; letter-spacing: -0.03em;
+  line-height: 1.1; margin-bottom: 12px;
+}
+.hero h2 .accent { color: var(--cyan); }
+.hero p { color: var(--text-dim); font-size: 1.05rem; max-width: 500px; margin: 0 auto 30px; }
+.hero-stats {
+  display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+}
+.hero-stat {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 24px; text-align: center;
+  min-width: 120px;
+}
+.hero-stat .val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.6rem; font-weight: 700;
+}
+.hero-stat .val.cyan { color: var(--cyan); }
+.hero-stat .val.magenta { color: var(--magenta); }
+.hero-stat .val.green { color: var(--green); }
+.hero-stat .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* ── SECTIONS ── */
+.section {
+  display: none; animation: fadeUp 0.5s ease;
+}
+.section.active { display: block; }
+
+.section-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 32px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--bg-deep); background: var(--cyan);
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.section-header h3 {
+  font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+}
+.section-header .marks {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem; color: var(--text-muted);
+}
+
+/* ── LEVEL SELECT ── */
+.levels {
+  display: flex; flex-direction: column; gap: 12px;
+  margin-top: 20px;
+}
+.level-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  display: flex; align-items: center; gap: 16px;
+  cursor: pointer; transition: all 0.25s ease;
+  position: relative; overflow: hidden;
+}
+.level-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 229, 255, 0.08);
+}
+.level-card.completed { border-color: var(--green); }
+.level-card.completed::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  border-width: 0 28px 28px 0; border-style: solid;
+  border-color: transparent var(--green) transparent transparent;
+}
+.level-icon {
+  width: 48px; height: 48px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; flex-shrink: 0;
+}
+.level-icon.cyan { background: var(--cyan-glow); }
+.level-icon.magenta { background: var(--magenta-glow); }
+.level-icon.green { background: var(--green-glow); }
+.level-icon.amber { background: var(--amber-glow); }
+.level-icon.purple { background: rgba(179,136,255,0.15); }
+.level-info { flex: 1; }
+.level-info h4 { font-size: 1.05rem; font-weight: 600; margin-bottom: 3px; }
+.level-info p { font-size: 0.82rem; color: var(--text-dim); }
+.level-marks {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem; color: var(--text-muted);
+}
+.level-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem; color: var(--green);
+  margin-top: 2px;
+}
+
+/* ── RULE CARDS ── */
+.rule-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 28px;
+}
+@media (max-width: 600px) { .rule-cards { grid-template-columns: 1fr; } }
+
+.rule-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px;
+  transition: border-color 0.2s;
+}
+.rule-card:hover { border-color: var(--cyan); }
+.rule-card .rule-name {
+  font-size: 0.7rem; color: var(--cyan); text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 8px; font-weight: 600;
+}
+.rule-card .rule-formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem; font-weight: 600; margin-bottom: 6px;
+}
+.rule-card .rule-example {
+  font-size: 0.82rem; color: var(--text-dim);
+}
+
+/* ── WORKED EXAMPLES ── */
+.worked-example {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  margin-bottom: 16px;
+}
+.worked-example .we-title {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--amber); font-weight: 600; margin-bottom: 12px;
+}
+.worked-example .we-problem {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.15rem; font-weight: 600; margin-bottom: 16px;
+  padding: 12px 16px; background: rgba(255,171,0,0.06);
+  border-radius: var(--radius-sm); border-left: 3px solid var(--amber);
+}
+.step {
+  display: none; padding: 10px 0 10px 20px;
+  border-left: 2px solid var(--border); margin-left: 8px;
+  animation: fadeUp 0.3s ease;
+}
+.step.visible { display: block; }
+.step .step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem; color: var(--cyan); margin-bottom: 4px;
+}
+.step .step-text { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 4px; }
+.step .step-math {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem; font-weight: 500; color: var(--text);
+}
+.step .step-math.final { color: var(--green); font-weight: 700; }
+
+.reveal-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; border: 1px solid var(--cyan);
+  color: var(--cyan); padding: 8px 18px; border-radius: 20px;
+  font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; margin-top: 10px; transition: all 0.2s;
+}
+.reveal-btn:hover {
+  background: var(--cyan-glow); box-shadow: 0 0 20px rgba(0,229,255,0.1);
+}
+.reveal-btn.done { border-color: var(--text-muted); color: var(--text-muted); cursor: default; }
+
+/* ── PRACTICE ── */
+.practice-header {
+  display: flex; align-items: center; gap: 10px;
+  margin: 32px 0 16px;
+}
+.practice-header h4 {
+  font-size: 1.1rem; font-weight: 600;
+}
+.practice-header .badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem; padding: 3px 10px; border-radius: 12px;
+  background: var(--magenta-glow); color: var(--magenta);
+}
+
+.practice-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 12px; transition: border-color 0.3s;
+}
+.practice-q.correct { border-color: var(--green); }
+.practice-q.incorrect { border-color: var(--magenta); }
+
+.practice-q .pq-label {
+  font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: 8px;
+}
+.practice-q .pq-problem {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem; font-weight: 600; margin-bottom: 14px;
+}
+.practice-q .pq-hint {
+  font-size: 0.8rem; color: var(--text-dim);
+  margin-bottom: 10px; font-style: italic;
+}
+.answer-row {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+}
+.answer-input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem; padding: 10px 14px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  width: 200px; outline: none; transition: border-color 0.2s;
+}
+.answer-input:focus { border-color: var(--cyan); }
+.answer-input.correct { border-color: var(--green); background: var(--green-glow); }
+.answer-input.incorrect { border-color: var(--magenta); background: var(--magenta-glow); }
+
+.check-btn {
+  background: var(--cyan); color: var(--bg-deep);
+  border: none; padding: 10px 20px; border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.check-btn:hover { box-shadow: 0 0 24px rgba(0,229,255,0.3); transform: translateY(-1px); }
+.check-btn:disabled { opacity: 0.4; cursor: default; transform: none; box-shadow: none; }
+
+.feedback-msg {
+  font-size: 0.85rem; margin-top: 10px; padding: 10px 14px;
+  border-radius: var(--radius-sm); display: none;
+}
+.feedback-msg.show { display: block; animation: fadeUp 0.3s ease; }
+.feedback-msg.correct { background: var(--green-glow); color: var(--green); }
+.feedback-msg.incorrect { background: var(--magenta-glow); color: var(--magenta); }
+
+/* Multiple choice */
+.mc-options {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 14px;
+}
+.mc-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); cursor: pointer;
+  transition: all 0.2s; font-size: 0.95rem;
+}
+.mc-option:hover { border-color: var(--cyan); background: rgba(0,229,255,0.03); }
+.mc-option.selected { border-color: var(--cyan); background: var(--cyan-glow); }
+.mc-option.correct-choice { border-color: var(--green); background: var(--green-glow); }
+.mc-option.wrong-choice { border-color: var(--magenta); background: var(--magenta-glow); }
+.mc-option .mc-letter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.mc-option.selected .mc-letter { border-color: var(--cyan); color: var(--cyan); }
+.mc-option .mc-text {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── BUTTONS ── */
+.btn-row {
+  display: flex; gap: 12px; margin-top: 32px; justify-content: flex-end; flex-wrap: wrap;
+}
+.btn {
+  padding: 12px 28px; border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; border: none;
+}
+.btn-primary {
+  background: var(--cyan); color: var(--bg-deep);
+}
+.btn-primary:hover { box-shadow: 0 0 28px rgba(0,229,255,0.3); transform: translateY(-2px); }
+.btn-secondary {
+  background: transparent; border: 1px solid var(--border); color: var(--text);
+}
+.btn-secondary:hover { border-color: var(--text-dim); }
+.btn-ghost {
+  background: transparent; color: var(--text-dim); padding: 12px 16px;
+}
+.btn-ghost:hover { color: var(--text); }
+
+/* ── RESULTS ── */
+.results-card {
+  text-align: center; padding: 40px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.results-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 4rem; font-weight: 900;
+  margin: 16px 0;
+}
+.results-score.pass { color: var(--green); }
+.results-score.fail { color: var(--amber); }
+.results-msg { font-size: 1.1rem; color: var(--text-dim); margin-bottom: 24px; }
+
+/* ── TIP CALLOUTS ── */
+.tip {
+  padding: 16px 20px; border-radius: var(--radius-sm);
+  margin: 16px 0; font-size: 0.88rem;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.tip-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.tip.info { background: var(--cyan-glow); border-left: 3px solid var(--cyan); }
+.tip.warn { background: var(--amber-glow); border-left: 3px solid var(--amber); }
+.tip.success { background: var(--green-glow); border-left: 3px solid var(--green); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 229, 255, 0); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* sup/sub in mono */
+.mono { font-family: 'JetBrains Mono', monospace; }
+sup { font-size: 0.7em; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <h1>Maths Mastery</h1>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+  <div class="score-display" id="scoreDisplay">0 / 0</div>
+</div>
+
+<div class="container">
+
+  <!-- ═══════════ HOME ═══════════ -->
+  <div class="section active" id="home">
+    <div class="hero">
+      <h2>Exponents &<br><span class="accent">Patterns</span></h2>
+      <p>Your personal study guide for the Grade 9 test. Learn the rules, see worked examples, then practise until it clicks.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="val cyan">48</div><div class="label">Total Marks</div></div>
+        <div class="hero-stat"><div class="val magenta">55</div><div class="label">Minutes</div></div>
+        <div class="hero-stat"><div class="val green" id="heroScore">0%</div><div class="label">Your Score</div></div>
+      </div>
+    </div>
+
+    <div class="levels" id="levelsList">
+      <div class="level-card" onclick="goToSection('exponentLaws')">
+        <div class="level-icon cyan">^</div>
+        <div class="level-info">
+          <h4>Level 1: Exponent Laws</h4>
+          <p>The 8 rules that control everything. Master these first.</p>
+        </div>
+        <div><div class="level-marks">18 marks</div><div class="level-score" id="score-exponentLaws"></div></div>
+      </div>
+      <div class="level-card" onclick="goToSection('sciNotation')">
+        <div class="level-icon amber">10</div>
+        <div class="level-info">
+          <h4>Level 2: Scientific Notation</h4>
+          <p>Big numbers, small numbers, powers of 10.</p>
+        </div>
+        <div><div class="level-marks">4 marks</div><div class="level-score" id="score-sciNotation"></div></div>
+      </div>
+      <div class="level-card" onclick="goToSection('expEquations')">
+        <div class="level-icon magenta">=</div>
+        <div class="level-info">
+          <h4>Level 3: Exponential Equations</h4>
+          <p>Solve for x when it's in the exponent. The big one.</p>
+        </div>
+        <div><div class="level-marks">13 marks</div><div class="level-score" id="score-expEquations"></div></div>
+      </div>
+      <div class="level-card" onclick="goToSection('patterns')">
+        <div class="level-icon green">n</div>
+        <div class="level-info">
+          <h4>Level 4: Number Patterns</h4>
+          <p>See the pattern, write the rule, find any term.</p>
+        </div>
+        <div><div class="level-marks">10 marks</div><div class="level-score" id="score-patterns"></div></div>
+      </div>
+      <div class="level-card" onclick="goToSection('mockTest')">
+        <div class="level-icon purple">!</div>
+        <div class="level-info">
+          <h4>Mock Test</h4>
+          <p>20 mixed questions. Timed. See if you hit 85%.</p>
+        </div>
+        <div><div class="level-marks">test</div><div class="level-score" id="score-mockTest"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ LEVEL 1: EXPONENT LAWS ═══════════ -->
+  <div class="section" id="exponentLaws">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h3>Exponent Laws</h3>
+      <div class="marks">18 marks in test</div>
+    </div>
+
+    <div class="tip info">
+      <span class="tip-icon">&#9889;</span>
+      <div><strong>Why this matters:</strong> 37% of your test marks come from simplifying expressions with exponents. Get these 8 rules into your bones and Q2 + Q4 become free marks.</div>
+    </div>
+
+    <h4 style="margin-bottom:14px; font-weight:600;">The 8 Rules</h4>
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Rule 1 — Multiply</div>
+        <div class="rule-formula">a<sup>m</sup> &times; a<sup>n</sup> = a<sup>m+n</sup></div>
+        <div class="rule-example">Same base? Add the exponents.<br>e.g. x<sup>3</sup> &times; x<sup>5</sup> = x<sup>8</sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Rule 2 — Divide</div>
+        <div class="rule-formula">a<sup>m</sup> &divide; a<sup>n</sup> = a<sup>m&minus;n</sup></div>
+        <div class="rule-example">Same base? Subtract exponents.<br>e.g. x<sup>7</sup> &divide; x<sup>2</sup> = x<sup>5</sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Rule 3 — Power of a Power</div>
+        <div class="rule-formula">(a<sup>m</sup>)<sup>n</sup> = a<sup>m&times;n</sup></div>
+        <div class="rule-example">Power outside bracket? Multiply.<br>e.g. (x<sup>3</sup>)<sup>4</sup> = x<sup>12</sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Rule 4 — Power of a Product</div>
+        <div class="rule-formula">(ab)<sup>n</sup> = a<sup>n</sup> &times; b<sup>n</sup></div>
+        <div class="rule-example">Power goes to each factor.<br>e.g. (2x)<sup>3</sup> = 8x<sup>3</sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Rule 5 — Power of a Fraction</div>
+        <div class="rule-formula">(a/b)<sup>n</sup> = a<sup>n</sup> / b<sup>n</sup></div>
+        <div class="rule-example">Power goes to top and bottom.<br>e.g. (x/3)<sup>2</sup> = x<sup>2</sup>/9</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Rule 6 — Zero Exponent</div>
+        <div class="rule-formula">a<sup>0</sup> = 1</div>
+        <div class="rule-example">Anything to the power 0 is 1.<br>e.g. 5<sup>0</sup> = 1, (3x)<sup>0</sup> = 1</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Rule 7 — Negative Exponent</div>
+        <div class="rule-formula">a<sup>&minus;n</sup> = 1 / a<sup>n</sup></div>
+        <div class="rule-example">Flip it! Negative means "one over".<br>e.g. x<sup>&minus;3</sup> = 1/x<sup>3</sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Rule 8 — Negative on a Fraction</div>
+        <div class="rule-formula">(a/b)<sup>&minus;n</sup> = (b/a)<sup>n</sup></div>
+        <div class="rule-example">Flip the fraction, lose the minus.<br>e.g. (2/3)<sup>&minus;2</sup> = (3/2)<sup>2</sup> = 9/4</div>
+      </div>
+    </div>
+
+    <div class="tip warn">
+      <span class="tip-icon">&#9888;</span>
+      <div><strong>Common trap:</strong> Rules 1 &amp; 2 only work with the <em>same base</em>. You can't add exponents of x<sup>3</sup> &times; y<sup>2</sup> — they have different bases!</div>
+    </div>
+
+    <!-- Worked Example 1 -->
+    <div class="worked-example" id="we1">
+      <div class="we-title">Worked Example 1</div>
+      <div class="we-problem">Simplify: 3<sup>2012</sup> &divide; 3<sup>2010</sup></div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Same base (3), so use Rule 2: subtract exponents</div>
+        <div class="step-math">= 3<sup>2012 &minus; 2010</sup></div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Simplify the exponent</div>
+        <div class="step-math final">= 3<sup>2</sup> = 9</div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <!-- Worked Example 2 -->
+    <div class="worked-example" id="we2">
+      <div class="we-title">Worked Example 2</div>
+      <div class="we-problem">Simplify: (&minus;2c<sup>2</sup>d<sup>3</sup>)<sup>4</sup></div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Use Rule 4: the power goes to EVERY factor inside the bracket</div>
+        <div class="step-math">= (&minus;2)<sup>4</sup> &times; (c<sup>2</sup>)<sup>4</sup> &times; (d<sup>3</sup>)<sup>4</sup></div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">(&minus;2)<sup>4</sup> = 16 (even power kills the negative). Use Rule 3 for the rest.</div>
+        <div class="step-math final">= 16c<sup>8</sup>d<sup>12</sup></div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <!-- Worked Example 3 -->
+    <div class="worked-example" id="we3">
+      <div class="we-title">Worked Example 3</div>
+      <div class="we-problem">Simplify with positive exponents: (2a)<sup>&minus;2</sup> &middot; b<sup>3</sup></div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Deal with the negative exponent first. Rule 7: flip it.</div>
+        <div class="step-math">= 1/(2a)<sup>2</sup> &times; b<sup>3</sup></div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Expand (2a)<sup>2</sup> using Rule 4</div>
+        <div class="step-math">= 1/(4a<sup>2</sup>) &times; b<sup>3</sup></div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">Combine</div>
+        <div class="step-math final">= b<sup>3</sup> / (4a<sup>2</sup>)</div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <!-- Worked Example 4 -->
+    <div class="worked-example" id="we4">
+      <div class="we-title">Worked Example 4</div>
+      <div class="we-problem">Simplify (positive exponents): j<sup>&minus;2</sup>k<sup>3</sup> &divide; j<sup>&minus;4</sup>k<sup>&minus;5</sup></div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Same bases — use Rule 2 for each base separately</div>
+        <div class="step-math">= j<sup>(&minus;2)&minus;(&minus;4)</sup> &times; k<sup>3&minus;(&minus;5)</sup></div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Careful with the double negatives: &minus;(&minus;4) = +4 and &minus;(&minus;5) = +5</div>
+        <div class="step-math">= j<sup>2</sup> &times; k<sup>8</sup></div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">Both exponents are already positive. Done!</div>
+        <div class="step-math final">= j<sup>2</sup>k<sup>8</sup></div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="practice-header">
+      <h4>Practice</h4>
+      <div class="badge">6 questions</div>
+    </div>
+
+    <div class="practice-q" id="el-q1">
+      <div class="pq-label">Question 1</div>
+      <div class="pq-problem">Simplify: 5<sup>8</sup> &divide; 5<sup>5</sup></div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="e.g. 125 or 5^3" data-answers="125,5^3" id="el-a1">
+        <button class="check-btn" onclick="checkAnswer('el-q1','el-a1')">Check</button>
+      </div>
+      <div class="feedback-msg" id="el-q1-fb"></div>
+    </div>
+
+    <div class="practice-q" id="el-q2">
+      <div class="pq-label">Question 2</div>
+      <div class="pq-problem">Simplify: (3x<sup>2</sup>)<sup>3</sup></div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="e.g. 27x^6" data-answers="27x^6" id="el-a2">
+        <button class="check-btn" onclick="checkAnswer('el-q2','el-a2')">Check</button>
+      </div>
+      <div class="feedback-msg" id="el-q2-fb"></div>
+    </div>
+
+    <div class="practice-q" id="el-q3">
+      <div class="pq-label">Question 3</div>
+      <div class="pq-problem">Simplify: 4e<sup>3</sup> + 2e<sup>3</sup></div>
+      <div class="pq-hint">Hint: these are like terms — treat e<sup>3</sup> as a "thing" you have 4 of plus 2 of</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="e.g. 6e^3" data-answers="6e^3" id="el-a3">
+        <button class="check-btn" onclick="checkAnswer('el-q3','el-a3')">Check</button>
+      </div>
+      <div class="feedback-msg" id="el-q3-fb"></div>
+    </div>
+
+    <div class="practice-q" id="el-q4">
+      <div class="pq-label">Question 4</div>
+      <div class="pq-problem">Simplify with positive exponents: (f/g)<sup>&minus;3</sup></div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="e.g. g^3/f^3" data-answers="g^3/f^3,(g/f)^3" id="el-a4">
+        <button class="check-btn" onclick="checkAnswer('el-q4','el-a4')">Check</button>
+      </div>
+      <div class="feedback-msg" id="el-q4-fb"></div>
+    </div>
+
+    <div class="practice-q" id="el-q5">
+      <div class="pq-label">Question 5</div>
+      <div class="pq-problem">Simplify: 4h<sup>&minus;3</sup> + 6h<sup>&minus;3</sup></div>
+      <div class="pq-hint">Same idea as Q3 — these are like terms. Then make the exponent positive.</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="e.g. 10/h^3" data-answers="10/h^3,10h^-3" id="el-a5">
+        <button class="check-btn" onclick="checkAnswer('el-q5','el-a5')">Check</button>
+      </div>
+      <div class="feedback-msg" id="el-q5-fb"></div>
+    </div>
+
+    <div class="practice-q" id="el-q6">
+      <div class="pq-label">Question 6 (harder)</div>
+      <div class="pq-problem">Simplify with positive exponents: 2(a<sup>2</sup>b<sup>3</sup>)<sup>10</sup> &divide; (4b<sup>2</sup>a<sup>&minus;2</sup>)</div>
+      <div class="pq-hint">Step 1: expand the power. Step 2: divide each base. Step 3: flip negatives.</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="answer" data-answers="a^22b^28/2,a^22*b^28/2" id="el-a6">
+        <button class="check-btn" onclick="checkAnswer('el-q6','el-a6')">Check</button>
+      </div>
+      <div class="feedback-msg" id="el-q6-fb"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goToSection('home')">&larr; Home</button>
+      <button class="btn btn-primary" onclick="goToSection('sciNotation')">Next: Scientific Notation &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ LEVEL 2: SCIENTIFIC NOTATION ═══════════ -->
+  <div class="section" id="sciNotation">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h3>Scientific Notation</h3>
+      <div class="marks">4 marks in test</div>
+    </div>
+
+    <div class="tip info">
+      <span class="tip-icon">&#128270;</span>
+      <div><strong>The idea:</strong> Scientific notation writes any number as <strong>a &times; 10<sup>n</sup></strong> where <strong>1 &le; a &lt; 10</strong> (one non-zero digit before the decimal point).</div>
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Big numbers</div>
+        <div class="rule-formula">Move decimal LEFT</div>
+        <div class="rule-example">82 100 000 &rarr; 8.21 &times; 10<sup>7</sup><br>Count: decimal moved 7 places left</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Small numbers</div>
+        <div class="rule-formula">Move decimal RIGHT</div>
+        <div class="rule-example">0.00053 &rarr; 5.3 &times; 10<sup>&minus;4</sup><br>Count: decimal moved 4 places right</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Already has &times;10<sup>n</sup>?</div>
+        <div class="rule-formula">Fix "a" first, adjust n</div>
+        <div class="rule-example">0.0077 &times; 10<sup>5</sup><br>= 7.7 &times; 10<sup>&minus;3</sup> &times; 10<sup>5</sup><br>= 7.7 &times; 10<sup>2</sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">To ordinary number</div>
+        <div class="rule-formula">Move decimal by n places</div>
+        <div class="rule-example">5 501 &times; 10<sup>&minus;6</sup><br>= 0.005501<br>(move 6 places left)</div>
+      </div>
+    </div>
+
+    <!-- Worked Example -->
+    <div class="worked-example" id="we-sn1">
+      <div class="we-title">Worked Example</div>
+      <div class="we-problem">Write 0,0077 &times; 10<sup>5</sup> in standard scientific notation</div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">First, write 0.0077 in scientific notation on its own</div>
+        <div class="step-math">0.0077 = 7.7 &times; 10<sup>&minus;3</sup> (moved decimal 3 places right)</div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Now substitute back and combine the powers of 10 (Rule 1!)</div>
+        <div class="step-math">= 7.7 &times; 10<sup>&minus;3</sup> &times; 10<sup>5</sup> = 7.7 &times; 10<sup>&minus;3+5</sup></div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">Simplify</div>
+        <div class="step-math final">= 7.7 &times; 10<sup>2</sup></div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <div class="practice-header">
+      <h4>Practice</h4>
+      <div class="badge">4 questions</div>
+    </div>
+
+    <div class="practice-q" id="sn-q1">
+      <div class="pq-label">Question 1</div>
+      <div class="pq-problem">Write in scientific notation: 82 100 000</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="e.g. 8.21 x 10^7" data-answers="8.21 x 10^7,8.21*10^7,8.21x10^7,8,21 x 10^7" id="sn-a1">
+        <button class="check-btn" onclick="checkAnswer('sn-q1','sn-a1')">Check</button>
+      </div>
+      <div class="feedback-msg" id="sn-q1-fb"></div>
+    </div>
+
+    <div class="practice-q" id="sn-q2">
+      <div class="pq-label">Question 2</div>
+      <div class="pq-problem">Write in scientific notation: 0,0077 &times; 10<sup>5</sup></div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="e.g. 7.7 x 10^2" data-answers="7.7 x 10^2,7.7*10^2,7.7x10^2,7,7 x 10^2" id="sn-a2">
+        <button class="check-btn" onclick="checkAnswer('sn-q2','sn-a2')">Check</button>
+      </div>
+      <div class="feedback-msg" id="sn-q2-fb"></div>
+    </div>
+
+    <div class="practice-q" id="sn-q3">
+      <div class="pq-label">Question 3</div>
+      <div class="pq-problem">Write as an ordinary number: 5 501 &times; 10<sup>&minus;6</sup></div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="e.g. 0.005501" data-answers="0.005501,0,005501" id="sn-a3">
+        <button class="check-btn" onclick="checkAnswer('sn-q3','sn-a3')">Check</button>
+      </div>
+      <div class="feedback-msg" id="sn-q3-fb"></div>
+    </div>
+
+    <div class="practice-q" id="sn-q4">
+      <div class="pq-label">Question 4</div>
+      <div class="pq-problem">Write in scientific notation: 0.00045</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="e.g. 4.5 x 10^-4" data-answers="4.5 x 10^-4,4.5*10^-4,4.5x10^-4,4,5 x 10^-4" id="sn-a4">
+        <button class="check-btn" onclick="checkAnswer('sn-q4','sn-a4')">Check</button>
+      </div>
+      <div class="feedback-msg" id="sn-q4-fb"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goToSection('exponentLaws')">&larr; Back</button>
+      <button class="btn btn-primary" onclick="goToSection('expEquations')">Next: Exponential Equations &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ LEVEL 3: EXPONENTIAL EQUATIONS ═══════════ -->
+  <div class="section" id="expEquations">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h3>Exponential Equations</h3>
+      <div class="marks">13 marks in test</div>
+    </div>
+
+    <div class="tip info">
+      <span class="tip-icon">&#127919;</span>
+      <div><strong>The golden rule:</strong> If the bases are the same, the exponents must be equal.<br>
+      a<sup>m</sup> = a<sup>n</sup> &rArr; m = n<br><br>
+      <strong>Your job:</strong> Rewrite both sides with the SAME base, then set exponents equal and solve.</div>
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Key Powers to Know</div>
+        <div class="rule-formula" style="font-size:0.85rem;">
+          2<sup>1</sup>=2 &nbsp; 2<sup>2</sup>=4 &nbsp; 2<sup>3</sup>=8 &nbsp; 2<sup>4</sup>=16 &nbsp; 2<sup>5</sup>=32 &nbsp; 2<sup>6</sup>=64 &nbsp; 2<sup>7</sup>=128
+        </div>
+        <div class="rule-example">Know these by heart. They appear constantly.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">More Key Powers</div>
+        <div class="rule-formula" style="font-size:0.85rem;">
+          3<sup>1</sup>=3 &nbsp; 3<sup>2</sup>=9 &nbsp; 3<sup>3</sup>=27 &nbsp; 3<sup>4</sup>=81<br>
+          4<sup>3</sup>=64 &nbsp; 8<sup>2</sup>=64
+        </div>
+        <div class="rule-example">Notice: 64 = 2<sup>6</sup> = 4<sup>3</sup> = 8<sup>2</sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Fractions = Negative Exponents</div>
+        <div class="rule-formula">1/a<sup>n</sup> = a<sup>&minus;n</sup></div>
+        <div class="rule-example">1/64 = 1/2<sup>6</sup> = 2<sup>&minus;6</sup><br>5/128 = 5/2<sup>7</sup> = 5 &times; 2<sup>&minus;7</sup></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Strategy</div>
+        <div class="rule-formula" style="font-size:0.9rem;">1. Rewrite &rarr; 2. Match &rarr; 3. Solve</div>
+        <div class="rule-example">1. Make both sides same base<br>2. Set exponents equal<br>3. Solve the simple equation</div>
+      </div>
+    </div>
+
+    <!-- Worked Example 1 -->
+    <div class="worked-example">
+      <div class="we-title">Worked Example 1</div>
+      <div class="we-problem">Solve for x: 81 = 3<sup>x&minus;2</sup></div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Rewrite 81 as a power of 3</div>
+        <div class="step-math">81 = 3<sup>4</sup>, so: 3<sup>4</sup> = 3<sup>x&minus;2</sup></div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Same base &rArr; exponents are equal</div>
+        <div class="step-math">4 = x &minus; 2</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">Solve</div>
+        <div class="step-math final">x = 6</div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <!-- Worked Example 2 -->
+    <div class="worked-example">
+      <div class="we-title">Worked Example 2</div>
+      <div class="we-problem">Solve for x: 64<sup>x</sup> = 8</div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Find a common base. 64 = 2<sup>6</sup> and 8 = 2<sup>3</sup></div>
+        <div class="step-math">(2<sup>6</sup>)<sup>x</sup> = 2<sup>3</sup></div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Use Rule 3: (2<sup>6</sup>)<sup>x</sup> = 2<sup>6x</sup></div>
+        <div class="step-math">2<sup>6x</sup> = 2<sup>3</sup></div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">Same base &rArr; 6x = 3</div>
+        <div class="step-math final">x = 1/2</div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <!-- Worked Example 3 -->
+    <div class="worked-example">
+      <div class="we-title">Worked Example 3</div>
+      <div class="we-problem">Solve for x: 2<sup>1&minus;3x</sup> = 1/64</div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Rewrite the right side: 1/64 = 1/2<sup>6</sup> = 2<sup>&minus;6</sup></div>
+        <div class="step-math">2<sup>1&minus;3x</sup> = 2<sup>&minus;6</sup></div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Same base &rArr; set exponents equal</div>
+        <div class="step-math">1 &minus; 3x = &minus;6</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">&minus;3x = &minus;7, so x = 7/3</div>
+        <div class="step-math final">x = 7/3</div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <!-- Worked Example 4 -->
+    <div class="worked-example">
+      <div class="we-title">Worked Example 4 (the tricky one)</div>
+      <div class="we-problem">Solve for x: 5 &middot; 2<sup>x</sup> = 5/128</div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Divide both sides by 5 to isolate the exponential</div>
+        <div class="step-math">2<sup>x</sup> = 1/128</div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Rewrite: 128 = 2<sup>7</sup>, so 1/128 = 2<sup>&minus;7</sup></div>
+        <div class="step-math">2<sup>x</sup> = 2<sup>&minus;7</sup></div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">Same base &rArr; exponents equal</div>
+        <div class="step-math final">x = &minus;7</div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <div class="practice-header">
+      <h4>Practice</h4>
+      <div class="badge">5 questions</div>
+    </div>
+
+    <div class="practice-q" id="ee-q1">
+      <div class="pq-label">Question 1</div>
+      <div class="pq-problem">Solve for x: 27 = 3<sup>x</sup></div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="x = ?" data-answers="3" id="ee-a1">
+        <button class="check-btn" onclick="checkAnswer('ee-q1','ee-a1')">Check</button>
+      </div>
+      <div class="feedback-msg" id="ee-q1-fb"></div>
+    </div>
+
+    <div class="practice-q" id="ee-q2">
+      <div class="pq-label">Question 2</div>
+      <div class="pq-problem">Solve for x: 16 = 2<sup>x+1</sup></div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="x = ?" data-answers="3" id="ee-a2">
+        <button class="check-btn" onclick="checkAnswer('ee-q2','ee-a2')">Check</button>
+      </div>
+      <div class="feedback-msg" id="ee-q2-fb"></div>
+    </div>
+
+    <div class="practice-q" id="ee-q3">
+      <div class="pq-label">Question 3</div>
+      <div class="pq-problem">Solve for x: 9<sup>x</sup> = 27</div>
+      <div class="pq-hint">Hint: rewrite both as powers of 3</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="x = ?" data-answers="3/2,1.5" id="ee-a3">
+        <button class="check-btn" onclick="checkAnswer('ee-q3','ee-a3')">Check</button>
+      </div>
+      <div class="feedback-msg" id="ee-q3-fb"></div>
+    </div>
+
+    <div class="practice-q" id="ee-q4">
+      <div class="pq-label">Question 4</div>
+      <div class="pq-problem">Solve for x: 5<sup>2x&minus;1</sup> = 1/25</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="x = ?" data-answers="-1/2,-0.5" id="ee-a4">
+        <button class="check-btn" onclick="checkAnswer('ee-q4','ee-a4')">Check</button>
+      </div>
+      <div class="feedback-msg" id="ee-q4-fb"></div>
+    </div>
+
+    <div class="practice-q" id="ee-q5">
+      <div class="pq-label">Question 5</div>
+      <div class="pq-problem">Solve for x: 3 &middot; 4<sup>x</sup> = 3/64</div>
+      <div class="pq-hint">Hint: divide both sides by 3 first, then rewrite 64 as a power of 4</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="x = ?" data-answers="-3" id="ee-a5">
+        <button class="check-btn" onclick="checkAnswer('ee-q5','ee-a5')">Check</button>
+      </div>
+      <div class="feedback-msg" id="ee-q5-fb"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goToSection('sciNotation')">&larr; Back</button>
+      <button class="btn btn-primary" onclick="goToSection('patterns')">Next: Patterns &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ LEVEL 4: NUMBER PATTERNS ═══════════ -->
+  <div class="section" id="patterns">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h3>Number Patterns</h3>
+      <div class="marks">10 marks in test</div>
+    </div>
+
+    <div class="tip info">
+      <span class="tip-icon">&#128161;</span>
+      <div><strong>Pattern questions always follow the same steps:</strong><br>
+      1. Count the values for each figure<br>
+      2. Find the <em>common difference</em> (how much it grows each time)<br>
+      3. Write the rule: y = (common difference) &times; x + (adjustment)<br>
+      4. Use the rule to find any figure number</div>
+    </div>
+
+    <div class="rule-cards">
+      <div class="rule-card">
+        <div class="rule-name">Linear Pattern</div>
+        <div class="rule-formula">y = mx + c</div>
+        <div class="rule-example">m = common difference<br>c = y-intercept (value when x=0)<br>or: c = first term &minus; m</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-name">Finding the Rule</div>
+        <div class="rule-formula">Step by step</div>
+        <div class="rule-example">1. Make a table of x and y<br>2. Find difference between y-values<br>3. That difference = m<br>4. Use any point to find c</div>
+      </div>
+    </div>
+
+    <!-- Worked Example: Cross pattern from Q1 -->
+    <div class="worked-example">
+      <div class="we-title">Worked Example — Cross Pattern (like Q1)</div>
+      <div class="we-problem">Figures made of squares in a cross shape. Figure 1 has 5, Figure 2 has 9, Figure 3 has 13...</div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Build the table and find the common difference</div>
+        <div class="step-math">x: 1, 2, 3, 4 &nbsp;&nbsp; y: 5, 9, 13, 17 &nbsp;&nbsp; difference = 4</div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Rule format: y = 4x + c. Use x=1, y=5 to find c.</div>
+        <div class="step-math">5 = 4(1) + c &nbsp;&rArr;&nbsp; c = 1</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">Write the equation and verify</div>
+        <div class="step-math final">y = 4x + 1 &nbsp;&nbsp; Check: x=2 &rarr; y=9 &#10003; &nbsp; x=3 &rarr; y=13 &#10003;</div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <!-- Worked Example: Finding figure number -->
+    <div class="worked-example">
+      <div class="we-title">Worked Example — Finding a Figure Number (like Q6a)</div>
+      <div class="we-problem">A stick pattern grows by 8 sticks per figure. Figure 1 has 13 sticks. Which figure has 705 sticks?</div>
+      <div class="step visible" data-step="0">
+        <div class="step-num">Step 1</div>
+        <div class="step-text">Write the rule: y = 8x + c. Use x=1, y=13.</div>
+        <div class="step-math">13 = 8(1) + c &nbsp;&rArr;&nbsp; c = 5 &nbsp;&rArr;&nbsp; y = 8x + 5</div>
+      </div>
+      <div class="step" data-step="1">
+        <div class="step-num">Step 2</div>
+        <div class="step-text">Set y = 705 and solve for x</div>
+        <div class="step-math">705 = 8x + 5 &nbsp;&rArr;&nbsp; 700 = 8x</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">Step 3</div>
+        <div class="step-text">Solve</div>
+        <div class="step-math final">x = 700 &divide; 8 = 87.5 ... hmm, check your count!</div>
+      </div>
+      <button class="reveal-btn" onclick="revealStep(this)">Show next step &rarr;</button>
+    </div>
+
+    <div class="tip warn">
+      <span class="tip-icon">&#9888;</span>
+      <div><strong>Counting tip for stick patterns:</strong> Count the sticks carefully in Figure 1 and Figure 2. Draw Figure 3 yourself to confirm the difference. One wrong count = wrong equation = lost marks.</div>
+    </div>
+
+    <div class="practice-header">
+      <h4>Practice</h4>
+      <div class="badge">4 questions</div>
+    </div>
+
+    <div class="practice-q" id="pt-q1">
+      <div class="pq-label">Question 1</div>
+      <div class="pq-problem">Pattern: 3, 7, 11, 15, ... What is the 10th term?</div>
+      <div class="pq-hint">Common difference = 4. Rule: y = 4x + ?</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="10th term = ?" data-answers="39" id="pt-a1">
+        <button class="check-btn" onclick="checkAnswer('pt-q1','pt-a1')">Check</button>
+      </div>
+      <div class="feedback-msg" id="pt-q1-fb"></div>
+    </div>
+
+    <div class="practice-q" id="pt-q2">
+      <div class="pq-label">Question 2</div>
+      <div class="pq-problem">Pattern: 5, 8, 11, 14, ... Write the equation for y in terms of x.</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="y = ?" data-answers="y = 3x + 2,y=3x+2,3x+2,3x + 2" id="pt-a2">
+        <button class="check-btn" onclick="checkAnswer('pt-q2','pt-a2')">Check</button>
+      </div>
+      <div class="feedback-msg" id="pt-q2-fb"></div>
+    </div>
+
+    <div class="practice-q" id="pt-q3">
+      <div class="pq-label">Question 3</div>
+      <div class="pq-problem">A pattern has rule y = 6x &minus; 1. Which term number gives y = 299?</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="x = ?" data-answers="50" id="pt-a3">
+        <button class="check-btn" onclick="checkAnswer('pt-q3','pt-a3')">Check</button>
+      </div>
+      <div class="feedback-msg" id="pt-q3-fb"></div>
+    </div>
+
+    <div class="practice-q" id="pt-q4">
+      <div class="pq-label">Question 4</div>
+      <div class="pq-problem">A right-angled triangle has A(&minus;6, 4) and B(&minus;6, &minus;6). AB = BC and the right angle is at B. If C is to the right of B, what are the coordinates of C?</div>
+      <div class="pq-hint">AB is vertical (same x-value). Length of AB = |4 &minus; (&minus;6)| = 10. BC must be horizontal and length 10. B is at (&minus;6, &minus;6).</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="(x, y)" data-answers="(4,-6),(4;-6),(4, -6),(4;-6),4,-6" id="pt-a4">
+        <button class="check-btn" onclick="checkAnswer('pt-q4','pt-a4')">Check</button>
+      </div>
+      <div class="feedback-msg" id="pt-q4-fb"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goToSection('expEquations')">&larr; Back</button>
+      <button class="btn btn-primary" onclick="goToSection('mockTest')">Take the Mock Test &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ MOCK TEST ═══════════ -->
+  <div class="section" id="mockTest">
+    <div class="section-header">
+      <div class="section-num">!</div>
+      <h3>Mock Test</h3>
+      <div class="marks" id="mockTimer">20 questions</div>
+    </div>
+
+    <div class="tip warn">
+      <span class="tip-icon">&#9200;</span>
+      <div><strong>Test conditions:</strong> 20 mixed questions covering all topics. Try to work through them like you would in the real test — show your working on paper, then enter your answer here. Target: 85% = 17/20.</div>
+    </div>
+
+    <div id="mockQuestions"></div>
+
+    <div class="btn-row" id="mockSubmitRow">
+      <button class="btn btn-ghost" onclick="goToSection('home')">&larr; Home</button>
+      <button class="btn btn-primary" onclick="submitMock()">Submit Test</button>
+    </div>
+
+    <div class="results-card" id="mockResults" style="display:none;">
+      <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Your Score</div>
+      <div class="results-score" id="mockScoreVal">0%</div>
+      <div class="results-msg" id="mockScoreMsg"></div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn btn-secondary" onclick="goToSection('home')">Back to Home</button>
+        <button class="btn btn-primary" onclick="resetMock()">Try Again</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── STATE ──
+let totalCorrect = 0;
+let totalAttempted = 0;
+const sectionScores = {};
+
+// ── NAVIGATION ──
+function goToSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (id === 'mockTest') initMock();
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('scoreDisplay').textContent = totalCorrect + ' / ' + totalAttempted;
+  document.getElementById('heroScore').textContent = pct + '%';
+}
+
+// ── REVEAL STEPS ──
+function revealStep(btn) {
+  const we = btn.closest('.worked-example');
+  const hidden = we.querySelectorAll('.step:not(.visible)');
+  if (hidden.length > 0) {
+    hidden[0].classList.add('visible');
+    if (hidden.length === 1) {
+      btn.textContent = 'All steps shown';
+      btn.classList.add('done');
+    }
+  }
+}
+
+// ── CHECK ANSWERS ──
+function checkAnswer(qId, aId) {
+  const input = document.getElementById(aId);
+  const q = document.getElementById(qId);
+  const fb = document.getElementById(qId + '-fb');
+  const btn = q.querySelector('.check-btn');
+
+  if (btn.disabled) return;
+
+  const userAns = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+  const acceptedRaw = input.getAttribute('data-answers');
+  const accepted = acceptedRaw.split(',').map(a => a.trim().toLowerCase().replace(/\s+/g, ' '));
+
+  const isCorrect = accepted.includes(userAns);
+
+  totalAttempted++;
+  if (isCorrect) {
+    totalCorrect++;
+    input.classList.add('correct');
+    q.classList.add('correct');
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback-msg show correct';
+  } else {
+    input.classList.add('incorrect');
+    q.classList.add('incorrect');
+    fb.innerHTML = 'Not quite. The answer is: <strong>' + accepted[0] + '</strong>';
+    fb.className = 'feedback-msg show incorrect';
+  }
+
+  btn.disabled = true;
+  updateProgress();
+
+  // Track section score
+  const section = q.closest('.section').id;
+  if (!sectionScores[section]) sectionScores[section] = { correct: 0, total: 0 };
+  sectionScores[section].total++;
+  if (isCorrect) sectionScores[section].correct++;
+  const el = document.getElementById('score-' + section);
+  if (el) el.textContent = sectionScores[section].correct + '/' + sectionScores[section].total;
+}
+
+// ── MOCK TEST ──
+const mockData = [
+  { q: 'Simplify: 7<sup>9</sup> &divide; 7<sup>6</sup>', answers: ['343','7^3'], hint: 'Rule 2: subtract exponents' },
+  { q: 'Simplify: (2a<sup>3</sup>)<sup>4</sup>', answers: ['16a^12'], hint: 'Rule 4 then Rule 3' },
+  { q: 'Simplify: 5x<sup>2</sup> + 3x<sup>2</sup>', answers: ['8x^2'], hint: 'Like terms' },
+  { q: 'Simplify with positive exponents: x<sup>&minus;4</sup>', answers: ['1/x^4'], hint: 'Rule 7: flip' },
+  { q: 'Simplify: (&minus;3p<sup>2</sup>q)<sup>3</sup>', answers: ['-27p^6q^3'], hint: 'Odd power keeps the negative' },
+  { q: 'Simplify with positive exponents: (a/b)<sup>&minus;2</sup>', answers: ['b^2/a^2','(b/a)^2'], hint: 'Rule 8: flip the fraction' },
+  { q: 'Write in scientific notation: 305 000', answers: ['3.05 x 10^5','3.05x10^5','3.05*10^5','3,05 x 10^5'], hint: 'Move decimal left' },
+  { q: 'Write as ordinary number: 2.4 &times; 10<sup>&minus;3</sup>', answers: ['0.0024'], hint: 'Move decimal 3 left' },
+  { q: 'Write in scientific notation: 0.0091 &times; 10<sup>4</sup>', answers: ['9.1 x 10^1,9.1x10^1,9.1*10^1,9,1 x 10^1,91'], hint: 'Fix 0.0091 first then combine powers' },
+  { q: 'Solve for x: 2<sup>x</sup> = 32', answers: ['5'], hint: '32 = 2^5' },
+  { q: 'Solve for x: 3<sup>x+1</sup> = 81', answers: ['3'], hint: '81 = 3^4' },
+  { q: 'Solve for x: 25<sup>x</sup> = 125', answers: ['3/2','1.5'], hint: 'Both are powers of 5' },
+  { q: 'Solve for x: 4<sup>2x&minus;1</sup> = 1/16', answers: ['-1/2,-0.5'], hint: '1/16 = 4^(-2)' },
+  { q: 'Solve for x: 2 &middot; 3<sup>x</sup> = 2/27', answers: ['-3'], hint: 'Divide by 2, then 1/27 = 3^(-3)' },
+  { q: 'Simplify: m<sup>&minus;3</sup>n<sup>2</sup> &divide; m<sup>&minus;5</sup>n<sup>&minus;1</sup>', answers: ['m^2n^3','m^2*n^3'], hint: 'Subtract exponents for each base' },
+  { q: 'Simplify: 3(a<sup>3</sup>b<sup>2</sup>)<sup>2</sup> &divide; (6a<sup>2</sup>b)', answers: ['a^4b^3/2','3a^4b^3/6'], hint: 'Expand power first, then divide' },
+  { q: 'Pattern: 2, 5, 8, 11, ... What is the 20th term?', answers: ['59'], hint: 'y = 3x &minus; 1' },
+  { q: 'Pattern: 7, 12, 17, 22, ... Write the equation.', answers: ['y = 5x + 2','y=5x+2','5x+2','5x + 2'], hint: 'Common difference = 5' },
+  { q: 'If y = 4x + 3, which term gives y = 203?', answers: ['50'], hint: '203 = 4x + 3, solve' },
+  { q: 'Simplify with positive exponents: 2h<sup>&minus;2</sup> + 3h<sup>&minus;2</sup>', answers: ['5/h^2','5h^-2'], hint: 'Like terms, then flip' },
+];
+
+let mockAnswered = [];
+
+function initMock() {
+  const container = document.getElementById('mockQuestions');
+  // Don't re-init if already populated with unanswered questions
+  if (container.children.length > 0 && mockAnswered.length === 0) return;
+
+  mockAnswered = new Array(mockData.length).fill(null);
+  container.innerHTML = '';
+  document.getElementById('mockResults').style.display = 'none';
+  document.getElementById('mockSubmitRow').style.display = 'flex';
+
+  mockData.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'practice-q';
+    div.id = 'mock-q' + i;
+    div.innerHTML = `
+      <div class="pq-label">Question ${i + 1} / 20</div>
+      <div class="pq-problem">${item.q}</div>
+      <div class="answer-row">
+        <input class="answer-input" placeholder="Your answer" id="mock-a${i}">
+        <button class="check-btn" onclick="checkMock(${i})" id="mock-btn${i}">Check</button>
+      </div>
+      <div class="feedback-msg" id="mock-fb${i}"></div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function checkMock(i) {
+  const input = document.getElementById('mock-a' + i);
+  const fb = document.getElementById('mock-fb' + i);
+  const q = document.getElementById('mock-q' + i);
+  const btn = document.getElementById('mock-btn' + i);
+
+  if (btn.disabled) return;
+
+  const userAns = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+  // Handle comma-separated alternatives within single answer strings
+  let allAccepted = [];
+  mockData[i].answers.forEach(a => {
+    a.split(',').forEach(x => allAccepted.push(x.trim().toLowerCase().replace(/\s+/g, ' ')));
+  });
+
+  const isCorrect = allAccepted.includes(userAns);
+  mockAnswered[i] = isCorrect;
+
+  if (isCorrect) {
+    input.classList.add('correct');
+    q.classList.add('correct');
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback-msg show correct';
+  } else {
+    input.classList.add('incorrect');
+    q.classList.add('incorrect');
+    fb.innerHTML = 'Answer: <strong>' + mockData[i].answers[0] + '</strong> — ' + mockData[i].hint;
+    fb.className = 'feedback-msg show incorrect';
+  }
+  btn.disabled = true;
+}
+
+function submitMock() {
+  // Check any unanswered
+  mockData.forEach((_, i) => {
+    if (mockAnswered[i] === null) {
+      const input = document.getElementById('mock-a' + i);
+      if (input.value.trim()) {
+        checkMock(i);
+      } else {
+        mockAnswered[i] = false;
+        const q = document.getElementById('mock-q' + i);
+        const fb = document.getElementById('mock-fb' + i);
+        q.classList.add('incorrect');
+        fb.innerHTML = 'Not answered. Answer: <strong>' + mockData[i].answers[0] + '</strong>';
+        fb.className = 'feedback-msg show incorrect';
+        document.getElementById('mock-btn' + i).disabled = true;
+      }
+    }
+  });
+
+  const correct = mockAnswered.filter(x => x === true).length;
+  const pct = Math.round((correct / 20) * 100);
+
+  document.getElementById('mockSubmitRow').style.display = 'none';
+  const results = document.getElementById('mockResults');
+  results.style.display = 'block';
+
+  const scoreEl = document.getElementById('mockScoreVal');
+  scoreEl.textContent = pct + '%';
+  scoreEl.className = 'results-score ' + (pct >= 85 ? 'pass' : 'fail');
+
+  const msg = document.getElementById('mockScoreMsg');
+  if (pct >= 85) {
+    msg.textContent = `${correct}/20 — You're ready for this test! Keep practising to stay sharp.`;
+  } else if (pct >= 70) {
+    msg.textContent = `${correct}/20 — Almost there! Review the topics where you dropped marks.`;
+  } else {
+    msg.textContent = `${correct}/20 — Go back through the levels and redo the worked examples before trying again.`;
+  }
+
+  // Update home
+  const el = document.getElementById('score-mockTest');
+  if (el) el.textContent = pct + '%';
+
+  results.scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetMock() {
+  mockAnswered = [];
+  document.getElementById('mockQuestions').innerHTML = '';
+  initMock();
+}
+</script>
+</body>
+</html>
